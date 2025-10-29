@@ -14,6 +14,9 @@ export const sequelize = new Sequelize(
     port: process.env.DB_PORT || 3306,
     dialect: "mysql",
     logging: false,
+    dialectOptions: {
+      connectTimeout: 60000, // por si hay latencia entre Render y Hostinger
+    },
   }
 );
 
