@@ -17,12 +17,17 @@ const allowedOrigins = [
   "https://pagadiario.online"
 ];
 
-const app = express();
-
-app.use(cors({
+const corsOptions = {
   origin: allowedOrigins,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Asegura que las preflight OPTIONS sean respondidas correctamente
+app.options("*", cors(corsOptions));
 
 app.use(express.json());
 
