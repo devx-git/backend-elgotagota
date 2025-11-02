@@ -10,7 +10,7 @@ import { verificarToken, esAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.get("/", verificarToken, getPlanes);
+router.get("/", getPlanes);
 router.get("/:id", verificarToken, getPlanById);
 router.post("/", verificarToken, esAdmin, createPlan);
 router.put("/:id", verificarToken, esAdmin, updatePlan);
