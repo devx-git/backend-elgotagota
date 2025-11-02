@@ -1,3 +1,4 @@
+import cors from "cors";
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -12,8 +13,13 @@ import historialRoutes from "./routes/historialRoutes.js";
 
 dotenv.config();
 
+const corsOptions = {
+  origin: "*", // o "*" para permitir todos los orígenes
+  credentials: true,
+};
+
 const app = express();
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Rutas principales
