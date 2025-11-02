@@ -35,6 +35,34 @@ export const crearCompra = async (req, res) => {
   }
 };
 
+export const comprarPlan = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const { planId } = req.body;
+
+    if (!planId) {
+      return res.status(400).json({ message: "ID del plan requerido" });
+    }
+
+    const plan = await Plan.findByPk(planId);
+    if (!plan) {
+      return res.status(404).json({ message: "Plan no encontrado" });
+    }
+
+    const compra = await Compra.create({
+      usuarioId: userId,
+      planId: plan.id,
+      monto: plan.inversionInicial,
+      gananciaMensual: plan.gananciaMensual,
+    });
+
+    res.status(201).json({ message: "Plan comprado con éxito", compra });
+  } catch (error) {
+    console.error("❌ Error al comprar plan:", error);
+    res.status(500).json({ message: "Error al procesar la compra", error });
+  }
+};
+
 /**
  * Obtener todas las compras (solo admin)
  */
