@@ -17,11 +17,6 @@ const allowedOrigins = [
   "https://pagadiario.online"
 ];
 
-const corsOptions = {
-  origin: allowedOrigins,
-  credentials: true,
-};
-
 const app = express();
 app.use(cors({
   origin: function (origin, callback) {

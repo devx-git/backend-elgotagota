@@ -17,8 +17,7 @@ export const User = sequelize.define(
     correo: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true,
-      validate: {
+        validate: {
         isEmail: true,
       },
     },
