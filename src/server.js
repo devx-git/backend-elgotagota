@@ -13,13 +13,27 @@ import historialRoutes from "./routes/historialRoutes.js";
 
 dotenv.config();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://pagadiario.online"
+];
+
 const corsOptions = {
-  origin: "*", // o "*" para permitir todos los orígenes
+  origin: allowedOrigins,
   credentials: true,
 };
 
 const app = express();
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("No permitido por CORS"));
+    }
+  },
+  credentials: true,
+}));
 app.use(express.json());
 
 // Rutas principales
