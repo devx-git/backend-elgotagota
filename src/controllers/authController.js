@@ -30,7 +30,7 @@ export const login = async (req, res) => {
     const token = jwt.sign(
       { id: user.id, rol: user.rol },
       SECRET_KEY,
-      { expiresIn: "4h" }
+      { expiresIn: "7d" }
     );
 
     res.json({ message: "Inicio de sesión exitoso", token, user });
