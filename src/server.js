@@ -18,7 +18,6 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/planes", planRoutes);
-app.use("/planes", planRoutes);
 app.use("/api/compras", compraRoutes);
 
 const PORT = process.env.PORT || 4000;
