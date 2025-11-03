@@ -1,8 +1,8 @@
 import { DataTypes } from "sequelize";
-import db from "../db/index.js";
+import { sequelize } from "../db/index.js";
 
 
-const Pago = db.define("Pago", {
+const Pago = sequelize.define("Pago", {
   user_id: { type: DataTypes.INTEGER, allowNull: false },
   plan_id: { type: DataTypes.INTEGER, allowNull: false },
   plan_nombre: { type: DataTypes.STRING, allowNull: false },
