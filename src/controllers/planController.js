@@ -16,24 +16,25 @@ const verificarAdmin = (req, res) => {
  */
 export const getPlanes = async (req, res) => {
   try {
-    const planes = await Plan.findAll({ order: [["orden", "ASC"]] });
-    const planesConCalculos = planes.map(plan => {
-    const mensual = plan.utilidadMensual;
-    const diario = mensual / 30;
-    const total = plan.inversionInicial + mensual;
+    const planes = await Plan.findAll({ order: [["id", "ASC"]] });
 
-  return {
-    id: plan.id,
-        numero: plan.numero, // ✅ este es el que se usa para "Llave X"
-        inversion: plan.inversionInicial,
+    const planesConCalculos = planes.map(plan => {
+      const mensual = plan.utilidad_mensual;
+      const diario = mensual / 30;
+      const total = plan.inversion_inicial + mensual;
+
+      return {
+        id: plan.id,
+        numero: plan.nombre, // ← si quieres mostrar "Llave X", usa nombre o crea un campo "numero"
+        inversion: plan.inversion_inicial,
         ganancia: mensual,
         diario: parseFloat(diario.toFixed(2)),
         total,
         descripcion: plan.descripcion,
-  };
-});
+      };
+    });
 
-res.json(planesConCalculos);
+    res.json(planesConCalculos);
   } catch (error) {
     console.error("❌ Error obteniendo planes:", error);
     res.status(500).json({ message: "Error obteniendo planes" });
