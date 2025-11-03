@@ -1,13 +1,11 @@
 import express from "express";
 import {
-  crearCompra,
   obtenerCompras,
   obtenerMisCompras,
   actualizarEstadoCompra,
 } from "../controllers/compraController.js";
 import { verificarToken } from "../middleware/authMiddleware.js";
 import { verificarRol } from "../middleware/roleMiddleware.js";
-import { comprarPlan } from "../controllers/compraController.js";
 
 const router = express.Router();
 
