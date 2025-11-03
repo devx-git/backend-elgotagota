@@ -52,8 +52,8 @@ export const comprarPlan = async (req, res) => {
     const compra = await Compra.create({
       usuarioId: userId,
       planId: plan.id,
-      monto: plan.inversionInicial,
-      gananciaMensual: plan.gananciaMensual,
+      valorPagado: plan.inversionInicial,
+      estado: "pendiente",
     });
 
     res.status(201).json({ message: "Plan comprado con éxito", compra });

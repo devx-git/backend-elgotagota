@@ -7,22 +7,8 @@ import Plan from "./Plan.js";
 const Compra = sequelize.define("Compra", {
   id: {
     type: DataTypes.INTEGER,
-    primaryKey: true,
     autoIncrement: true,
-  },
-  fechaCompra: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW,
-  },
-  valorPagado: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-  },
-  estado: {
-    type: DataTypes.ENUM("pendiente", "pagado", "cancelado"),
-    allowNull: false,
-    defaultValue: "pendiente",
+    primaryKey: true,
   },
   userId: {
     type: DataTypes.INTEGER,
@@ -32,9 +18,21 @@ const Compra = sequelize.define("Compra", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  valorPagado: {
+    type: DataTypes.FLOAT,
+    allowNull: false,
+  },
+  estado: {
+    type: DataTypes.ENUM("pendiente", "pagado", "cancelado"),
+    defaultValue: "pendiente",
+  },
+  fechaCompra: {
+    type: DataTypes.DATE,
+    defaultValue: DataTypes.NOW,
+  },
 }, {
-  timestamps: true,
   tableName: "compras",
+  timestamps: false,
 });
 
 // Relaciones
