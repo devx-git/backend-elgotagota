@@ -7,7 +7,7 @@ import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import planRoutes from "./routes/planRoutes.js";
 import compraRoutes from "./routes/compraRoutes.js";
-import pagosRoutes from "./routes/pagosRoutes.js";
+import pagoRoutes from "./routes/pagoRoutes.js";
 import historialRoutes from "./routes/historialRoutes.js";
 
 dotenv.config();
@@ -38,7 +38,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/planes", planRoutes);
 app.use("/api/compras", compraRoutes);
-app.use("/api/pagos", pagosRoutes);
+app.use("/api/pagos", pagoRoutes);
 app.use("/api/historial", historialRoutes);
 
 const PORT = process.env.PORT || 4000;
