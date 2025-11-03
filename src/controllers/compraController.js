@@ -3,65 +3,65 @@ import Compra from "../models/Compra.js";
 import Plan from "../models/Plan.js";
 import User from "../models/User.js";
 
-/**
- * Crear una compra (solo clientes)
- */
-export const crearCompra = async (req, res) => {
-  try {
-    const { planId } = req.body;
-    const userId = req.usuario.id;
+// /**
+//  * Crear una compra (solo clientes)
+//  */
+// export const crearCompra = async (req, res) => {
+//   try {
+//     const { planId } = req.body;
+//     const userId = req.usuario.id;
 
-    // Verificar si el plan existe
-    const plan = await Plan.findByPk(planId);
-    if (!plan) {
-      return res.status(404).json({ message: "El plan no existe" });
-    }
+//     // Verificar si el plan existe
+//     const plan = await Plan.findByPk(planId);
+//     if (!plan) {
+//       return res.status(404).json({ message: "El plan no existe" });
+//     }
 
-    // Crear compra
-    const compra = await Compra.create({
-      userId,
-      planId,
-      valorPagado: plan.precio,
-      estado: "pendiente",
-    });
+//     // Crear compra
+//     const compra = await Compra.create({
+//       userId,
+//       planId,
+//       valorPagado: plan.precio,
+//       estado: "pendiente",
+//     });
 
-    res.status(201).json({
-      message: "Compra registrada correctamente",
-      compra,
-    });
-  } catch (error) {
-    console.error("Error al crear compra:", error);
-    res.status(500).json({ message: "Error al registrar la compra" });
-  }
-};
+//     res.status(201).json({
+//       message: "Compra registrada correctamente",
+//       compra,
+//     });
+//   } catch (error) {
+//     console.error("Error al crear compra:", error);
+//     res.status(500).json({ message: "Error al registrar la compra" });
+//   }
+// };
 
-export const comprarPlan = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const { planId } = req.body;
+// export const comprarPlan = async (req, res) => {
+//   try {
+//     const userId = req.user.id;
+//     const { planId } = req.body;
 
-    if (!planId) {
-      return res.status(400).json({ message: "ID del plan requerido" });
-    }
+//     if (!planId) {
+//       return res.status(400).json({ message: "ID del plan requerido" });
+//     }
 
-    const plan = await Plan.findByPk(planId);
-    if (!plan) {
-      return res.status(404).json({ message: "Plan no encontrado" });
-    }
+//     const plan = await Plan.findByPk(planId);
+//     if (!plan) {
+//       return res.status(404).json({ message: "Plan no encontrado" });
+//     }
 
-    const compra = await Compra.create({
-      usuarioId: userId,
-      planId: plan.id,
-      valorPagado: plan.inversionInicial,
-      estado: "pendiente",
-    });
+//     const compra = await Compra.create({
+//       usuarioId: userId,
+//       planId: plan.id,
+//       valorPagado: plan.inversionInicial,
+//       estado: "pendiente",
+//     });
 
-    res.status(201).json({ message: "Plan comprado con éxito", compra });
-  } catch (error) {
-    console.error("❌ Error al comprar plan:", error);
-    res.status(500).json({ message: "Error al procesar la compra", error });
-  }
-};
+//     res.status(201).json({ message: "Plan comprado con éxito", compra });
+//   } catch (error) {
+//     console.error("❌ Error al comprar plan:", error);
+//     res.status(500).json({ message: "Error al procesar la compra", error });
+//   }
+// };
 
 /**
  * Obtener todas las compras (solo admin)

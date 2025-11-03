@@ -24,12 +24,12 @@ export const getPlanes = async (req, res) => {
 
   return {
     id: plan.id,
-    nombre: `Llave ${plan.numero}`,
-    inversion: plan.inversionInicial,
-    ganancia: mensual,
-    diario: parseFloat(diario.toFixed(2)),
-    total,
-    descripcion: plan.descripcion,
+        numero: plan.numero, // ✅ este es el que se usa para "Llave X"
+        inversion: plan.inversionInicial,
+        ganancia: mensual,
+        diario: parseFloat(diario.toFixed(2)),
+        total,
+        descripcion: plan.descripcion,
   };
 });
 
