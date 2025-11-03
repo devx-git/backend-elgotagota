@@ -25,7 +25,7 @@ export const getPlanes = async (req, res) => {
 
       return {
         id: plan.id,
-        numero: plan.nombre, // ← si quieres mostrar "Llave X", usa nombre o crea un campo "numero"
+        numero: plan.id, // ← si quieres mostrar "Llave X", usa nombre o crea un campo "numero"
         inversion: plan.inversion_inicial,
         ganancia: mensual,
         diario: parseFloat(diario.toFixed(2)),
