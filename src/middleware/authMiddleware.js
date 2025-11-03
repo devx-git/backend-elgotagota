@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const SECRET_KEY = process.env.JWT_SECRET || "supersecretkey123";
+const SECRET_KEY = process.env.JWT_SECRET;
+
 
 /**
  * ✅ Verifica si el token JWT es válido y el usuario existe.

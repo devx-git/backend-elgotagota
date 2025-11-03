@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 import { User } from "../models/User.js";
 
-const SECRET_KEY = process.env.JWT_SECRET || "supersecretkey123";
+const SECRET_KEY = process.env.JWT_SECRET;
+
 
 // Registro
 export const register = async (req, res) => {
