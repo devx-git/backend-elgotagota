@@ -3,23 +3,21 @@ import User from "../models/User.js";
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
-
-/**
- * ✅ Verifica si el token JWT es válido y el usuario existe.
- * - Extrae el token del header Authorization.
- * - Decodifica el token y busca el usuario en la base de datos.
- * - Adjunta el usuario autenticado a req.user.
- */
 export const verificarToken = async (req, res, next) => {
   try {
     const token = req.headers["authorization"]?.split(" ")[1];
-    if (!token) return res.status(403).json({ message: "Token no proporcionado" });
+    if (!token) {
+      console.error("❌ Token no proporcionado");
+      return res.status(403).json({ message: "Token no proporcionado" });
+    }
 
     const decoded = jwt.verify(token, SECRET_KEY);
-
-    // Buscar el usuario real en la base de datos
     const user = await User.findByPk(decoded.id);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+
+    if (!user) {
+      console.error("❌ Usuario no encontrado con ID:", decoded.id);
+      return res.status(404).json({ message: "Usuario no encontrado" });
+    }
 
     req.user = {
       id: user.id,
@@ -28,14 +26,13 @@ export const verificarToken = async (req, res, next) => {
       rol: user.rol,
     };
 
-    console.log("✅ Usuario autenticado:", req.user); // <-- útil para verificar rol en consola
-
     next();
   } catch (error) {
-    console.error("❌ Error en verificación de token:", error.message);
-    res.status(401).json({ message: "Token inválido o expirado" });
+    console.error("❌ Error al verificar token:", error.message);
+    return res.status(401).json({ message: "Token inválido o expirado" });
   }
 };
+
 
 /**
  * 👑 Middleware para restringir acceso solo a administradores.
