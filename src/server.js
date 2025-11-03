@@ -12,6 +12,8 @@ import historialRoutes from "./routes/historialRoutes.js";
 
 dotenv.config();
 
+const app = express(); // ✅ define app antes de usarla
+
 const allowedOrigins = [
   "http://localhost:5173",
   "https://pagadiario.online"
