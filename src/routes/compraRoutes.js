@@ -12,7 +12,7 @@ import { comprarPlan } from "../controllers/compraController.js";
 const router = express.Router();
 
 // 👤 Cliente compra un plan
-router.post("/", verificarToken, comprarPlan);
+router.post("/comprar", verificarToken, comprarPlan);
 router.post("/", verificarToken, verificarRol(["cliente", "admin"]), crearCompra);
 
 // 👤 Cliente consulta sus compras
