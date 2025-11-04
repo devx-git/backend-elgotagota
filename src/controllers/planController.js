@@ -12,25 +12,37 @@ const verificarAdmin = (req, res) => {
 };
 
 /**
- * 🟢 Obtener todos los planes (disponible para todos)
+ * 🟢 Obtener todos los planes (disponible para todos) - CORREGIDO
  */
 export const getPlanes = async (req, res) => {
   try {
     const planes = await Plan.findAll({ order: [["id", "ASC"]] });
 
     const planesConCalculos = planes.map(plan => {
-      const mensual = plan.utilidad_mensual;
-      const diario = mensual / 30;
-      const total = plan.inversion_inicial + mensual;
+      const inversion = plan.inversion_inicial;
+      const ganancia = plan.utilidad_mensual;
+      
+      // CALCULO CORREGIDO: Total a recibir (inversión + ganancia)
+      const totalRecibir = inversion + ganancia;
+      
+      // GOTEO DIARIO CORREGIDO: Total ÷ 30 días (en lugar de solo ganancia ÷ 30)
+      const goteoDiario = totalRecibir / 30;
 
       return {
         id: plan.id,
-        numero: plan.id, // ← si quieres mostrar "Llave X", usa nombre o crea un campo "numero"
-        inversion: plan.inversion_inicial,
-        ganancia: mensual,
-        diario: parseFloat(diario.toFixed(2)),
-        total,
+        numero: plan.id,
+        inversion: inversion,
+        ganancia: ganancia,
+        diario: parseFloat(goteoDiario.toFixed(2)), // ← AHORA del TOTAL
+        total: totalRecibir,
         descripcion: plan.descripcion,
+        
+        // DATOS ADICIONALES PARA MEJOR VISUALIZACIÓN
+        inversion_formateada: `$${inversion.toLocaleString()}`,
+        ganancia_formateada: `$${ganancia.toLocaleString()}`,
+        diario_formateado: `$${goteoDiario.toFixed(2).toLocaleString()}`,
+        total_formateado: `$${totalRecibir.toLocaleString()}`,
+        dias_duracion: 30 // Puedes hacerlo dinámico si lo necesitas
       };
     });
 
@@ -42,7 +54,7 @@ export const getPlanes = async (req, res) => {
 };
 
 /**
- * 🟣 Obtener plan por ID (disponible para todos)
+ * 🟣 Obtener plan por ID (disponible para todos) - ACTUALIZADO
  */
 export const getPlanById = async (req, res) => {
   try {
@@ -50,7 +62,23 @@ export const getPlanById = async (req, res) => {
     const plan = await Plan.findByPk(id);
     if (!plan) return res.status(404).json({ message: "Plan no encontrado" });
 
-    res.json(plan);
+    // Aplicar mismo cálculo corregido para consistencia
+    const inversion = plan.inversion_inicial;
+    const ganancia = plan.utilidad_mensual;
+    const totalRecibir = inversion + ganancia;
+    const goteoDiario = totalRecibir / 30;
+
+    const planConCalculos = {
+      ...plan.toJSON(),
+      diario: parseFloat(goteoDiario.toFixed(2)),
+      total: totalRecibir,
+      inversion_formateada: `$${inversion.toLocaleString()}`,
+      ganancia_formateada: `$${ganancia.toLocaleString()}`,
+      diario_formateado: `$${goteoDiario.toFixed(2).toLocaleString()}`,
+      total_formateado: `$${totalRecibir.toLocaleString()}`
+    };
+
+    res.json(planConCalculos);
   } catch (error) {
     console.error("❌ Error obteniendo plan por ID:", error);
     res.status(500).json({ message: "Error obteniendo plan" });
@@ -67,7 +95,22 @@ export const searchPlans = async (req, res) => {
     if (estado) where.estado = estado;
 
     const plans = await Plan.findAll({ where });
-    res.json(plans);
+    
+    // Aplicar cálculos corregidos a los resultados de búsqueda
+    const planesConCalculos = plans.map(plan => {
+      const inversion = plan.inversion_inicial;
+      const ganancia = plan.utilidad_mensual;
+      const totalRecibir = inversion + ganancia;
+      const goteoDiario = totalRecibir / 30;
+
+      return {
+        ...plan.toJSON(),
+        diario: parseFloat(goteoDiario.toFixed(2)),
+        total: totalRecibir
+      };
+    });
+
+    res.json(planesConCalculos);
   } catch (error) {
     res.status(500).json({ message: "Error en la búsqueda", error });
   }
