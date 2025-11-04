@@ -1,23 +1,14 @@
-import Pago from "../models/Pago.js";
+import Pago from "../models/Pago.js"; // Asegúrate de importar el modelo
 
-export const registrarPago = async (req, res) => {
+export const obtenerPagosPorUsuario = async (req, res) => {
   try {
-    const { metodo, nombre, celular, referencia } = req.body;
-    const user_id = req.user.id;
-
-    const nuevoPago = await Pago.create({
-      user_id,
-      metodo,
-      referencia,
-      nombre,
-      celular,
-      estado: "pendiente",
+    const pagos = await Pago.findAll({
+      where: { user_id: req.user.id },
+      order: [["createdAt", "DESC"]],
     });
-
-    res.json({ message: "✅ Pago registrado", pago: nuevoPago });
+    res.json(pagos);
   } catch (error) {
-    console.error("❌ Error al registrar pago:", error);
-    res.status(500).json({ message: "Error al registrar el pago" });
+    console.error("Error al obtener pagos:", error);
+    res.status(500).json({ message: "Error al obtener pagos" });
   }
 };
-
