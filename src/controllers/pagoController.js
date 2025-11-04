@@ -6,14 +6,11 @@ export const registrarPago = async (req, res) => {
     const user_id = req.usuario.id;
 
     const nuevoPago = await Pago.create({
-      user_id,
-      plan_id: nivel,
-      plan_nombre: `Llave ${nivel}`,
+      user_id: req.usuario.id,
       metodo,
       referencia,
       nombre,
       celular,
-      monto: inversion,
       estado: "pendiente",
     });
 
