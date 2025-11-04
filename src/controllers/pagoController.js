@@ -2,11 +2,11 @@ import Pago from "../models/Pago.js";
 
 export const registrarPago = async (req, res) => {
   try {
-    const { nivel, inversion, metodo, referencia, nombre, celular } = req.body;
-    const user_id = req.usuario.id;
+    const { metodo, nombre, celular, referencia } = req.body;
+    const user_id = req.usuario?.id;
 
     const nuevoPago = await Pago.create({
-      user_id: req.usuario.id,
+      user_id,
       metodo,
       referencia,
       nombre,
