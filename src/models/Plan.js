@@ -19,8 +19,4 @@ const Plan = sequelize.define(
 });
 
 
-// 🔗 Relaciones
-User.hasMany(Plan, { foreignKey: "usuarioId", as: "planes" });
-Plan.belongsTo(User, { foreignKey: "usuarioId", as: "usuario" });
-
 export default Plan;

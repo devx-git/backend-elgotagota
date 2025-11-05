@@ -4,7 +4,7 @@ import { sequelize } from "../db/index.js";
 
 const Pago = sequelize.define("Pago", {
   user_id: { type: DataTypes.INTEGER, allowNull: false },
-  plan_id: { type: DataTypes.INTEGER, allowNull: true },
+  plan_id: { type: DataTypes.INTEGER, allowNull: false },
   plan_nombre: { type: DataTypes.STRING, allowNull: true },
   metodo: { type: DataTypes.STRING, allowNull: false },
   referencia: { type: DataTypes.STRING, allowNull: false },
