@@ -6,6 +6,7 @@ import Pago from "../models/Pago.js"; // Modelo Sequelize
     try {
       const nuevoPago = await Pago.create({
         user_id: req.user.id,
+        plan_id: req.body.plan_id,
         metodo: req.body.metodo,
         referencia: req.body.referencia,
         nombre: req.body.nombre,

@@ -1,9 +1,18 @@
+import Compra from "../models/Compra.js";
+
 export const obtenerHistorial = async (req, res) => {
   try {
-    const userId = req.user.id;
-    // Aquí puedes consultar historial real desde la base de datos
-    res.json({ historial: [`Historial simulado para usuario ${userId}`] });
+    const historial = await Compra.findAll({
+      where: {
+        user_id: req.user.id,
+        estado: "finalizado", // ✅ solo planes cerrados
+      },
+      order: [["updatedAt", "DESC"]],
+    });
+
+    res.json(historial);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener historial", error });
+    console.error("Error al obtener historial:", error);
+    res.status(500).json({ message: "Error al obtener historial" });
   }
 };
