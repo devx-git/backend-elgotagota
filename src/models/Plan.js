@@ -3,6 +3,8 @@ const { DataTypes } = pkg;
 import { sequelize } from "../db/index.js";
 import User from "./User.js";
 
+Plan.hasMany(Pago, { foreignKey: "plan_id", as: "pagos" });
+
 // 🧩 Definición del modelo Plan
 const Plan = sequelize.define(
   "Plan", 

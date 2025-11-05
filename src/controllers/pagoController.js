@@ -1,5 +1,5 @@
 import Pago from "../models/Pago.js"; // Modelo Sequelize
-
+import Plan from "../models/Plan.js";
 // ✅ Registrar nuevo pago
 
    export const registrarPago = async (req, res) => {
@@ -26,8 +26,15 @@ export const obtenerPagosPorUsuario = async (req, res) => {
   try {
     const pagos = await Pago.findAll({
       where: { user_id: req.user.id },
-      order: [["createdAt", "DESC"]],
+      include: [
+        {
+          model: Plan,
+          as: "plan",
+          attributes: ["id", "nombre", "inversion_inicial", "utilidad_mensual"],
+        },
+      ],
     });
+
     res.json(pagos);
   } catch (error) {
     console.error("Error al obtener pagos:", error);
