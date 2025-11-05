@@ -2,7 +2,6 @@ import { DataTypes } from "sequelize";
 import { sequelize } from "../db/index.js";
 import Plan from "./Plan.js";
 
-Pago.belongsTo(Plan, { foreignKey: "plan_id", as: "plan" });
 
 const Pago = sequelize.define("Pago", {
   user_id: { type: DataTypes.INTEGER, allowNull: false },

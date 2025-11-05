@@ -9,8 +9,10 @@ import planRoutes from "./routes/planRoutes.js";
 import compraRoutes from "./routes/compraRoutes.js";
 import pagoRoutes from "./routes/pagoRoutes.js";
 import historialRoutes from "./routes/historialRoutes.js";
+import defineAssociations from "./models/associations.js";
 
 dotenv.config();
+defineAssociations(); // ✅ activa las relaciones
 
 const app = express(); // ✅ define app antes de usarla
 
