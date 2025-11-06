@@ -42,3 +42,23 @@ export const obtenerPagosPorUsuario = async (req, res) => {
     res.status(500).json({ message: "Error al obtener pagos" });
   }
 };
+
+export const actualizarEstadoPago = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const pago = await Pago.findByPk(id);
+    if (!pago) {
+      return res.status(404).json({ message: "Pago no encontrado" });
+    }
+
+    pago.estado = estado;
+    await pago.save();
+
+    res.json({ message: "Estado actualizado correctamente", pago });
+  } catch (error) {
+    console.error("Error al actualizar estado del pago:", error);
+    res.status(500).json({ message: "Error al actualizar estado del pago" });
+  }
+};
