@@ -11,7 +11,8 @@ import Plan from "../models/Plan.js";
         referencia: req.body.referencia,
         nombre: req.body.nombre,
         celular: req.body.celular,
-        estado: req.body.estado || "pendiente",
+        estado: "activo", // ✅ activación directa
+        fecha_pago: new Date(), // ✅ marca la fecha de activación
       });
 
     res.status(201).json(nuevoPago);

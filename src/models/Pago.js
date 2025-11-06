@@ -12,7 +12,11 @@ const Pago = sequelize.define("Pago", {
   nombre: { type: DataTypes.STRING, allowNull: false },   // ✅ nuevo campo
   celular: { type: DataTypes.STRING, allowNull: false },  // ✅ nuevo campo
   monto: { type: DataTypes.FLOAT, allowNull: true },
-  estado: { type: DataTypes.STRING, defaultValue: "pendiente" },
+  estado: { type: DataTypes.STRING, defaultValue: "activo" },
+  fecha_pago: {
+  type: DataTypes.DATE,
+  allowNull: true,
+},
 }, {
   tableName: "pagos",
   timestamps: true,
