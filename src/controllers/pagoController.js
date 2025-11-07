@@ -62,3 +62,26 @@ export const actualizarEstadoPago = async (req, res) => {
     res.status(500).json({ message: "Error al actualizar estado del pago" });
   }
 };
+
+export const obtenerTodosLosPagos = async (req, res) => {
+  try {
+    if (req.user.rol !== "admin") {
+      return res.status(403).json({ message: "Acceso denegado" });
+    }
+
+    const pagos = await Pago.findAll({
+      include: [
+        {
+          model: Plan,
+          as: "plan",
+          attributes: ["id", "nombre", "inversion_inicial", "utilidad_mensual"],
+        },
+      ],
+    });
+
+    res.json(pagos);
+  } catch (error) {
+    console.error("Error al obtener todos los pagos:", error);
+    res.status(500).json({ message: "Error al obtener pagos" });
+  }
+};
