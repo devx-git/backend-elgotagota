@@ -30,7 +30,7 @@ import Plan from "./models/Plan.js";
 import Pago from "./models/Pago.js";
 
 // ✅ Luego define relaciones
-import defineAssociations from "./models/defineAssociations.js";
+import defineAssociations from "./models/associations.js";
 defineAssociations();
 
 // ✅ Rutas
