@@ -3,19 +3,11 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { sequelize } from "./db/index.js";
 
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import planRoutes from "./routes/planRoutes.js";
-import compraRoutes from "./routes/compraRoutes.js";
-import pagoRoutes from "./routes/pagoRoutes.js";
-import historialRoutes from "./routes/historialRoutes.js";
-import defineAssociations from "./models/associations.js";
-
 dotenv.config();
-defineAssociations(); // ✅ activa las relaciones
 
-const app = express(); // ✅ define app antes de usarla
+const app = express();
 
+// ✅ CORS
 const allowedOrigins = [
   "http://localhost:5173",
   "https://pagadiario.online"
@@ -29,13 +21,26 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-
-// ✅ Asegura que las preflight OPTIONS sean respondidas correctamente
 app.options("*", cors(corsOptions));
-
 app.use(express.json());
 
-// Rutas principales
+// ✅ Importa modelos primero (sin relaciones)
+import User from "./models/User.js";
+import Plan from "./models/Plan.js";
+import Pago from "./models/Pago.js";
+
+// ✅ Luego define relaciones
+import defineAssociations from "./models/defineAssociations.js";
+defineAssociations();
+
+// ✅ Rutas
+import authRoutes from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+import planRoutes from "./routes/planRoutes.js";
+import compraRoutes from "./routes/compraRoutes.js";
+import pagoRoutes from "./routes/pagoRoutes.js";
+import historialRoutes from "./routes/historialRoutes.js";
+
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/planes", planRoutes);
@@ -43,6 +48,7 @@ app.use("/api/compras", compraRoutes);
 app.use("/api/pagos", pagoRoutes);
 app.use("/api/historial", historialRoutes);
 
+// ✅ Inicio del servidor
 const PORT = process.env.PORT || 4000;
 
 app.listen(PORT, async () => {
