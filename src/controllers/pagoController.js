@@ -1,5 +1,6 @@
 import Pago from "../models/Pago.js"; // Modelo Sequelize
 import Plan from "../models/Plan.js";
+import User from "../models/User.js"; // asegúrate de importar el modelo
 // ✅ Registrar nuevo pago
 
    export const registrarPago = async (req, res) => {
@@ -75,6 +76,11 @@ export const obtenerTodosLosPagos = async (req, res) => {
           model: Plan,
           as: "plan",
           attributes: ["id", "nombre", "inversion_inicial", "utilidad_mensual"],
+        },
+        {
+          model: User,
+          as: "usuario",
+          attributes: ["id", "nombre", "correo"], // ajusta según tus campos
         },
       ],
     });

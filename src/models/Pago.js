@@ -1,7 +1,10 @@
 import { DataTypes } from "sequelize";
 import { sequelize } from "../db/index.js";
+import User from "./User.js"; // o la ruta correcta
 import Plan from "./Plan.js";
 
+Pago.belongsTo(User, { as: "usuario", foreignKey: "userId" });
+User.hasMany(Pago, { foreignKey: "userId" });
 
 const Pago = sequelize.define("Pago", {
   user_id: { type: DataTypes.INTEGER, allowNull: false },
