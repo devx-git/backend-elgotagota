@@ -5,13 +5,22 @@ import User from "../models/User.js"; // asegúrate de importar el modelo
 
    export const registrarPago = async (req, res) => {
     try {
+      console.log("📥 Datos recibidos:", req.body);
+      console.log("👤 Usuario autenticado:", req.user);
+
+            // ✅ Buscar el plan en la base de datos
+          const plan = await Plan.findByPk(req.body.plan_id);
+          if (!plan) {
+            return res.status(404).json({ message: "Plan no encontrado" });
+          }
       const nuevoPago = await Pago.create({
         user_id: req.user.id,
-        plan_id: req.body.plan_id,
+        plan_id: plan.id,
         metodo: req.body.metodo,
         referencia: req.body.referencia,
         nombre: req.body.nombre,
         celular: req.body.celular,
+        monto: plan.inversion_inicial, // ✅ valor real desde la tabla plan
         estado: "activo", // ✅ activación directa
         fecha_pago: new Date(), // ✅ marca la fecha de activación
       });
