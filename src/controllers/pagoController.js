@@ -4,30 +4,56 @@ import User from "../models/User.js"; // asegúrate de importar el modelo
 // ✅ Registrar nuevo pago
 
    export const registrarPago = async (req, res) => {
-    try {
-      console.log("📥 Datos recibidos:", req.body);
-      console.log("👤 Usuario autenticado:", req.user);
+  try {
+    console.log("📥 Datos recibidos:", req.body);
+    console.log("👤 Usuario autenticado:", req.user);
 
-            // ✅ Buscar el plan en la base de datos
-          const plan = await Plan.findByPk(req.body.plan_id);
-          if (!plan) {
-            return res.status(404).json({ message: "Plan no encontrado" });
-          }
-      const nuevoPago = await Pago.create({
-        user_id: req.user.id,
-        plan_id: plan.id,
-        metodo: req.body.metodo,
-        referencia: req.body.referencia,
-        nombre: req.body.nombre,
-        celular: req.body.celular,
-        monto: plan.inversion_inicial, // ✅ valor real desde la tabla plan
-        estado: "activo", // ✅ activación directa
-        fecha_pago: new Date(), // ✅ marca la fecha de activación
-      });
+    const { metodo, referencia, nombre, celular, plan_id } = req.body;
 
-    res.status(201).json(nuevoPago);
+    // ✅ Validación de campos obligatorios
+    if (!metodo || !referencia || !nombre || !celular || !plan_id) {
+      return res.status(400).json({ message: "Todos los campos son obligatorios" });
+    }
+
+    // ✅ Validación de rol
+    if (req.user.rol !== "cliente") {
+      return res.status(403).json({ message: "Solo los clientes pueden registrar pagos" });
+    }
+
+    // ✅ Buscar el plan en la base de datos
+    const plan = await Plan.findByPk(plan_id);
+    if (!plan) {
+      return res.status(404).json({ message: "Plan no encontrado" });
+    }
+
+    // ✅ Verificar si ya existe un pago para este usuario y plan
+    const pagoExistente = await Pago.findOne({
+      where: { user_id: req.user.id, plan_id: plan.id }
+    });
+    if (pagoExistente) {
+      return res.status(409).json({ message: "Ya tienes un pago registrado para este plan" });
+    }
+
+    // ✅ Crear el nuevo pago
+    const nuevoPago = await Pago.create({
+      user_id: req.user.id,
+      plan_id: plan.id,
+      metodo,
+      referencia,
+      nombre,
+      celular,
+      monto: plan.inversion_inicial,
+      estado: "activo",
+      fecha_pago: new Date()
+    });
+
+    res.status(201).json({
+      message: "Pago registrado correctamente",
+      pago: nuevoPago
+    });
+
   } catch (error) {
-    console.error("Error al registrar el pago:", error);
+    console.error("❌ Error al registrar el pago:", error);
     res.status(500).json({ message: "Error al registrar el pago" });
   }
 };
