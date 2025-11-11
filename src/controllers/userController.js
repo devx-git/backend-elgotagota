@@ -57,3 +57,17 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ message: "Error al eliminar usuario", error });
   }
 };
+
+// Obtener el perfil del usuario autenticado
+export const getPerfil = async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ message: "No autorizado" });
+    }
+
+    const { id, nombre, correo, rol } = req.user;
+    res.json({ id, nombre, correo, rol });
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el perfil", error });
+  }
+};
