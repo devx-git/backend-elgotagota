@@ -1,9 +1,9 @@
 import express from "express";
 import { verificarToken } from "../middleware/authMiddleware.js";
-import { obtenerHistorial } from "../controllers/historialController.js";
+import { obtenerHistorialConGoteo } from "../controllers/historialController.js";
 
 const router = express.Router();
 
-router.get("/", verificarToken, obtenerHistorial);
+router.get("/goteo", verificarToken, obtenerHistorialConGoteo);
 
 export default router;
