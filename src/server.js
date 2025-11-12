@@ -53,6 +53,7 @@ import planRoutes from "./routes/planRoutes.js";
 import compraRoutes from "./routes/compraRoutes.js";
 import pagoRoutes from "./routes/pagoRoutes.js";
 import historialRoutes from "./routes/historialRoutes.js";
+import retiroRoutes from "./routes/retiroRoutes.js";
 
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
@@ -60,6 +61,7 @@ app.use("/api/planes", planRoutes);
 app.use("/api/compras", compraRoutes);
 app.use("/api/pagos", pagoRoutes);
 app.use("/api/historial", historialRoutes);
+app.use("/api/retiros", retiroRoutes);
 
 // ✅ Inicio del servidor
 const PORT = process.env.PORT || 4000;
