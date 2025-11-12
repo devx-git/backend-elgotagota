@@ -10,8 +10,14 @@ const app = express();
 // ✅ CORS
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://pagadiario.online"
+  "https://pagadiario.online",
+  "https://www.pagadiario.online",
 ];
+
+app.use((req, res, next) => {
+  console.log("🌐 Origin recibido:", req.headers.origin);
+  next();
+});
 
 const corsOptions = {
   origin: (origin, callback) => {
