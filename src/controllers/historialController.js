@@ -6,7 +6,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
     const usuarioId = req.user.id;
 
     const pagos = await Pago.findAll({
-      where: { usuario_id: usuarioId }
+      where: { user_id: usuarioId }
     });
 
     const historial = pagos.map((pago) => {
