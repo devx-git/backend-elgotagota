@@ -77,3 +77,61 @@ export const obtenerHistorialConGoteo = async (req, res) => {
     res.status(500).json({ message: "Error al obtener historial con goteo" });
   }
 };
+
+export const retirarPago = async (req, res) => {
+  try {
+    const pago = await Pago.findByPk(req.params.id);
+    if (!pago) return res.status(404).json({ message: "Pago no encontrado" });
+
+    pago.estado = "retirado";
+    await pago.save();
+
+    res.json({ message: "Pago retirado correctamente" });
+  } catch (error) {
+    console.error("❌ Error al retirar pago:", error);
+    res.status(500).json({ message: "Error al retirar pago" });
+  }
+};
+
+export const invertirPago = async (req, res) => {
+  try {
+    const pagoOriginal = await Pago.findByPk(req.params.id);
+    if (!pagoOriginal) return res.status(404).json({ message: "Pago no encontrado" });
+
+    await Pago.create({
+      user_id: req.user.id,
+      plan_id: pagoOriginal.plan_id,
+      monto: pagoOriginal.monto,
+      fecha_pago: new Date(),
+      estado: "activo"
+    });
+
+    res.json({ message: "Nueva inversión creada" });
+  } catch (error) {
+    console.error("❌ Error al invertir:", error);
+    res.status(500).json({ message: "Error al invertir" });
+  }
+};
+
+export const reinvertirPago = async (req, res) => {
+  try {
+    const pagoOriginal = await Pago.findByPk(req.params.id);
+    if (!pagoOriginal) return res.status(404).json({ message: "Pago no encontrado" });
+
+    const ganancia = pagoOriginal.monto * 0.40;
+    const nuevoMonto = pagoOriginal.monto + ganancia;
+
+    await Pago.create({
+      user_id: req.user.id,
+      plan_id: pagoOriginal.plan_id,
+      monto: nuevoMonto,
+      fecha_pago: new Date(),
+      estado: "activo"
+    });
+
+    res.json({ message: "Reinversión creada con éxito" });
+  } catch (error) {
+    console.error("❌ Error al reinvertir:", error);
+    res.status(500).json({ message: "Error al reinvertir" });
+  }
+};
