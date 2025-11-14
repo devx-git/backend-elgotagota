@@ -3,7 +3,7 @@ import Pago from "../models/Pago.js";
 
 export const registrarRetiro = async (req, res) => {
   try {
-    const { pago_id, titular, tipo_cuenta, numero_cuenta, monto } = req.body;
+    const { pago_id, titular, tipo_cuenta, numero_cuenta, monto, banco } = req.body;
     const user_id = req.user.id;
 
     // Verificar que el pago exista y pertenezca al usuario
@@ -30,7 +30,8 @@ export const registrarRetiro = async (req, res) => {
       titular,
       tipo_cuenta,
       numero_cuenta,
-      monto
+      monto,
+      ...(banco && { banco })
     });
 
     // Actualizar el estado del pago a 'retirado'

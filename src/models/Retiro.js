@@ -18,6 +18,10 @@ const Retiro = sequelize.define("Retiro", {
     type: DataTypes.ENUM("ahorros", "corriente", "nequi", "daviplata"),
     allowNull: false
   },
+   banco: { 
+    type: DataTypes.STRING, 
+    allowNull: true 
+  },
   numero_cuenta: {
     type: DataTypes.STRING,
     allowNull: false
