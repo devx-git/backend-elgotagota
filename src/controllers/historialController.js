@@ -8,7 +8,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
 
     const hoy = new Date();
 
-    const historial = pagos.map((pago) => {
+    const historial = await Promise.all(pagos.map(async (pago) => {
       const planNombre = pago.plan_id ? `Llave ${pago.plan_id}` : (pago.plan_nombre || "Sin plan");
       const monto = pago.monto;
       const fechaInicio = pago.fecha_pago || pago.fecha_inicio; // soporta ambos campos
@@ -36,6 +36,13 @@ export const obtenerHistorialConGoteo = async (req, res) => {
       const acumulado = goteoDiario * dias;
       const estado = dias >= 30 ? "completado" : "activo";
 
+       // ✅ Guardar acumulado y estado en la BD cuando se completa
+      if (estado === "completado" && pago.estado !== "completado") {
+        pago.estado = "completado";
+        pago.ganancia_acumulada = Math.floor(acumulado);
+        await pago.save();
+      }
+
       return {
         pago_id: pago.id,
         fecha_inicio: fechaInicio,
@@ -48,7 +55,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
         estado,
         acciones: estado === "completado" ? ["Retirar", "Invertir", "Reinvertir"] : []
       };
-    });
+    }));
 
     res.json(historial);
   } catch (error) {

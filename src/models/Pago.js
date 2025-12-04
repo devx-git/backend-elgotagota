@@ -11,6 +11,7 @@ const Pago = sequelize.define("Pago", {
   nombre: { type: DataTypes.STRING, allowNull: false },   // ✅ nuevo campo
   celular: { type: DataTypes.STRING, allowNull: false },  // ✅ nuevo campo
   monto: { type: DataTypes.FLOAT, allowNull: true },
+  ganancia_acumulada: { type: DataTypes.FLOAT, allowNull: true, defaultValue: 0 },
   estado: { type: DataTypes.STRING, defaultValue: "activo" },
   fecha_pago: {
   type: DataTypes.DATE,
