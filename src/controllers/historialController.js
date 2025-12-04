@@ -88,7 +88,7 @@ export const invertirPago = async (req, res) => {
       return res.status(400).json({ message: "Solo puedes invertir pagos completados" });
     }
 
-    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || 0);
+    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || pagoOriginal.monto || 0);
     if (!inversionInicial || inversionInicial <= 0) {
       return res.status(400).json({ message: "No hay ganancia para invertir" });
     }
