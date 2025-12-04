@@ -5,10 +5,11 @@ export const obtenerHistorialConGoteo = async (req, res) => {
   try {
     const usuarioId = req.user.id;
     const pagos = await Pago.findAll({ where: { user_id: usuarioId } });
-
+    console.log("📦 Pagos encontrados:", pagos.map(p => p.toJSON())); // 👈 aquí
     const hoy = new Date();
 
     const historial = await Promise.all(pagos.map(async (pago) => {
+      console.log("➡️ Pago procesado:", pago.toJSON()); // 👈 aquí
       const planNombre = pago.plan_id ? `Llave ${pago.plan_id}` : (pago.plan_nombre || "Sin plan");
       const monto = pago.monto;
       const fechaInicio = pago.fecha_pago || pago.fecha_inicio; // soporta ambos campos
@@ -40,6 +41,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
       if (estado === "completado" && pago.estado !== "completado") {
         pago.estado = "completado";
         pago.ganancia_acumulada = Math.floor(acumulado);
+        console.log("💾 Guardando pago:", pago.toJSON()); // 👈 aquí
         await pago.save();
       }
 
