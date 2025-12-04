@@ -111,7 +111,7 @@ export const invertirPago = async (req, res) => {
     const totalGoteo = inversionInicial + utilidadMensual;
     const goteoDiario = Math.floor(totalGoteo / DIAS);
 
-    // 👇 reiniciamos fechas
+    // Reiniciar fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
 
@@ -123,7 +123,12 @@ export const invertirPago = async (req, res) => {
       ganancia_acumulada: 0,
       estado: "activo",
       fecha_inicio: ahora,
-      fecha_fin: fechaFin
+      fecha_fin: fechaFin,
+      // 👇 Copiamos campos obligatorios del pago original
+      metodo: pagoOriginal.metodo,
+      referencia: pagoOriginal.referencia,
+      nombre: pagoOriginal.nombre,
+      celular: pagoOriginal.celular
     });
 
     res.json({
@@ -135,6 +140,7 @@ export const invertirPago = async (req, res) => {
     res.status(500).json({ message: "Error al invertir" });
   }
 };
+
 
 export const reinvertirPago = async (req, res) => {
   try {
@@ -155,7 +161,7 @@ export const reinvertirPago = async (req, res) => {
     const totalGoteo = inversionInicial + utilidadMensual;
     const goteoDiario = Math.floor(totalGoteo / DIAS);
 
-    // 👇 reiniciamos fechas
+    // Reiniciar fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
 
@@ -167,7 +173,12 @@ export const reinvertirPago = async (req, res) => {
       ganancia_acumulada: 0,
       estado: "activo",
       fecha_inicio: ahora,
-      fecha_fin: fechaFin
+      fecha_fin: fechaFin,
+      // 👇 Copiamos campos obligatorios del pago original
+      metodo: pagoOriginal.metodo,
+      referencia: pagoOriginal.referencia,
+      nombre: pagoOriginal.nombre,
+      celular: pagoOriginal.celular
     });
 
     res.json({
@@ -179,4 +190,5 @@ export const reinvertirPago = async (req, res) => {
     res.status(500).json({ message: "Error al reinvertir" });
   }
 };
+
 
