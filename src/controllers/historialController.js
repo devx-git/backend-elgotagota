@@ -122,8 +122,7 @@ export const invertirPago = async (req, res) => {
       monto: inversionInicial,
       ganancia_acumulada: 0,
       estado: "activo",
-      fecha_inicio: ahora,
-      fecha_fin: fechaFin,
+      fecha_pago: ahora,
       // 👇 Copiamos campos obligatorios del pago original
       metodo: pagoOriginal.metodo,
       referencia: pagoOriginal.referencia,
@@ -172,8 +171,7 @@ export const reinvertirPago = async (req, res) => {
       monto: inversionInicial,
       ganancia_acumulada: 0,
       estado: "activo",
-      fecha_inicio: ahora,
-      fecha_fin: fechaFin,
+      fecha_pago: ahora,
       // 👇 Copiamos campos obligatorios del pago original
       metodo: pagoOriginal.metodo,
       referencia: pagoOriginal.referencia,
