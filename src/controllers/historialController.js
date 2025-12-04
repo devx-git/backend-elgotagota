@@ -40,11 +40,22 @@ export const obtenerHistorialConGoteo = async (req, res) => {
        // ✅ Guardar acumulado y estado en la BD cuando se completa
       if (estado === "completado" && pago.estado !== "completado") {
         pago.estado = "completado";
-        pago.ganancia_acumulada = Math.floor(acumulado);
+        pago.ganancia_acumulada = parseFloat(acumulado.toFixed(2));
         console.log("💾 Guardando pago:", pago.toJSON()); // 👈 aquí
         await pago.save();
       }
-
+        
+       // ✅ Acciones según tipo de plan
+      let acciones = [];
+      if (estado === "completado") {
+        acciones = ["Retirar"];
+        if (pago.plan_nombre === "invertir" || pago.plan_nombre === "reinvertir") {
+          acciones.push("Reinvertir"); // ya es inversión personalizada
+        } else {
+          acciones.push("Invertir", "Reinvertir"); // planes normales
+        }
+      }
+     
       return {
         pago_id: pago.id,
         fecha_inicio: fechaInicio,
@@ -100,6 +111,7 @@ export const invertirPago = async (req, res) => {
     const totalGoteo = inversionInicial + utilidadMensual;
     const goteoDiario = Math.floor(totalGoteo / DIAS);
 
+    // 👇 reiniciamos fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
 
@@ -119,11 +131,10 @@ export const invertirPago = async (req, res) => {
       nuevoPago
     });
   } catch (error) {
-    console.error("❌ Error al invertir:", error);
+    console.error("❌ Error al invertir:", error.message, error.stack);
     res.status(500).json({ message: "Error al invertir" });
   }
 };
-
 
 export const reinvertirPago = async (req, res) => {
   try {
@@ -134,7 +145,7 @@ export const reinvertirPago = async (req, res) => {
       return res.status(400).json({ message: "Solo puedes reinvertir pagos completados" });
     }
 
-    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || 0);
+    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || pagoOriginal.monto || 0);
     if (!inversionInicial || inversionInicial <= 0) {
       return res.status(400).json({ message: "No hay ganancia para reinvertir" });
     }
@@ -144,6 +155,7 @@ export const reinvertirPago = async (req, res) => {
     const totalGoteo = inversionInicial + utilidadMensual;
     const goteoDiario = Math.floor(totalGoteo / DIAS);
 
+    // 👇 reiniciamos fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
 
@@ -163,7 +175,8 @@ export const reinvertirPago = async (req, res) => {
       nuevoPago
     });
   } catch (error) {
-    console.error("❌ Error al reinvertir:", error);
+    console.error("❌ Error al reinvertir:", error.message, error.stack);
     res.status(500).json({ message: "Error al reinvertir" });
   }
 };
+
