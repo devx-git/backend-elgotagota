@@ -4,24 +4,21 @@ import Plan from "../models/Plan.js";
 export const obtenerHistorialConGoteo = async (req, res) => {
   try {
     const usuarioId = req.user.id;
+    const pagos = await Pago.findAll({ where: { user_id: usuarioId } });
 
-    const pagos = await Pago.findAll({
-      where: { user_id: usuarioId }
-    });
+    const hoy = new Date();
 
     const historial = pagos.map((pago) => {
-      // 🧠 Validación de campos
-      const planNombre = pago.plan_id ? `Llave ${pago.plan_id}` : "Sin plan";
+      const planNombre = pago.plan_id ? `Llave ${pago.plan_id}` : (pago.plan_nombre || "Sin plan");
       const monto = pago.monto;
-      const fechaInicio = pago.fecha_pago;
+      const fechaInicio = pago.fecha_pago || pago.fecha_inicio; // soporta ambos campos
 
-      // 🧠 Validación de monto
-      if (!monto) {
+      if (!monto || !fechaInicio) {
         return {
           pago_id: pago.id,
           fecha_inicio: fechaInicio || "Fecha no disponible",
           plan_nombre: planNombre,
-          monto: "Inversión no registrada",
+          monto: monto || "Inversión no registrada",
           ganancia: "0.00",
           goteo_diario: "0.00",
           dias_transcurridos: 0,
@@ -31,26 +28,8 @@ export const obtenerHistorialConGoteo = async (req, res) => {
         };
       }
 
-      // 🧠 Validación de fecha
-      if (!fechaInicio) {
-        return {
-          pago_id: pago.id,
-          fecha_inicio: "Fecha no disponible",
-          plan_nombre: planNombre,
-          monto,
-          ganancia: "0.00",
-          goteo_diario: "0.00",
-          dias_transcurridos: 0,
-          ganancia_acumulada: "0.00",
-          estado: "incompleto",
-          acciones: []
-        };
-      }
-
-      // ✅ Cálculo de goteo
-      const hoy = new Date();
+      // ✅ Cálculo de goteo (igual para planes normales y personalizados)
       const dias = Math.min(30, Math.floor((hoy - new Date(fechaInicio)) / (1000 * 60 * 60 * 24)));
-
       const ganancia = monto * 0.40;
       const total = monto + ganancia;
       const goteoDiario = total / 30;
@@ -98,38 +77,82 @@ export const invertirPago = async (req, res) => {
     const pagoOriginal = await Pago.findByPk(req.params.id);
     if (!pagoOriginal) return res.status(404).json({ message: "Pago no encontrado" });
 
-    await Pago.create({
+    if (pagoOriginal.estado !== "completado") {
+      return res.status(400).json({ message: "Solo puedes invertir pagos completados" });
+    }
+
+    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || 0);
+    if (!inversionInicial || inversionInicial <= 0) {
+      return res.status(400).json({ message: "No hay ganancia para invertir" });
+    }
+
+    const DIAS = 30;
+    const utilidadMensual = Math.floor(inversionInicial * 0.40);
+    const totalGoteo = inversionInicial + utilidadMensual;
+    const goteoDiario = Math.floor(totalGoteo / DIAS);
+
+    const ahora = new Date();
+    const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
+
+    const nuevoPago = await Pago.create({
       user_id: req.user.id,
-      plan_id: pagoOriginal.plan_id,
-      monto: pagoOriginal.monto,
-      fecha_pago: new Date(),
-      estado: "activo"
+      plan_id: null,
+      plan_nombre: "invertir",
+      monto: inversionInicial,
+      ganancia_acumulada: 0,
+      estado: "activo",
+      fecha_inicio: ahora,
+      fecha_fin: fechaFin
     });
 
-    res.json({ message: "Nueva inversión creada" });
+    res.json({
+      message: `Inversión creada por 30 días. Goteo diario: ${goteoDiario}`,
+      nuevoPago
+    });
   } catch (error) {
     console.error("❌ Error al invertir:", error);
     res.status(500).json({ message: "Error al invertir" });
   }
 };
 
+
 export const reinvertirPago = async (req, res) => {
   try {
     const pagoOriginal = await Pago.findByPk(req.params.id);
     if (!pagoOriginal) return res.status(404).json({ message: "Pago no encontrado" });
 
-    const ganancia = pagoOriginal.monto * 0.40;
-    const nuevoMonto = pagoOriginal.monto + ganancia;
+    if (pagoOriginal.estado !== "completado") {
+      return res.status(400).json({ message: "Solo puedes reinvertir pagos completados" });
+    }
 
-    await Pago.create({
+    const inversionInicial = Number(pagoOriginal.ganancia_acumulada || 0);
+    if (!inversionInicial || inversionInicial <= 0) {
+      return res.status(400).json({ message: "No hay ganancia para reinvertir" });
+    }
+
+    const DIAS = 30;
+    const utilidadMensual = Math.floor(inversionInicial * 0.40);
+    const totalGoteo = inversionInicial + utilidadMensual;
+    const goteoDiario = Math.floor(totalGoteo / DIAS);
+
+    const ahora = new Date();
+    const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
+
+    const nuevoPago = await Pago.create({
       user_id: req.user.id,
-      plan_id: pagoOriginal.plan_id,
-      monto: nuevoMonto,
-      fecha_pago: new Date(),
-      estado: "activo"
+      plan_id: null,
+      plan_nombre: "reinvertir",
+      monto: inversionInicial,
+      ganancia_acumulada: 0,
+      estado: "activo",
+      fecha_inicio: ahora,
+      fecha_fin: fechaFin
     });
 
-    res.json({ message: "Reinversión creada con éxito" });
+    res.json({
+      message: `Reinversión creada por 30 días. Goteo diario: ${goteoDiario}`,
+      nuevoPago
+    });
   } catch (error) {
     console.error("❌ Error al reinvertir:", error);
     res.status(500).json({ message: "Error al reinvertir" });
