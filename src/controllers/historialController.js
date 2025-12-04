@@ -30,7 +30,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
       }
 
       // ✅ Cálculo de goteo (igual para planes normales y personalizados)
-      const dias = Math.min(30, Math.floor((hoy - new Date(fechaInicio)) / (1000 * 60 * 60 * 24)));
+      const dias = Math.min(30, Math.max(0, Math.floor((hoy - new Date(fechaInicio)) / (1000 * 60 * 60 * 24))));
       const ganancia = monto * 0.40;
       const total = monto + ganancia;
       const goteoDiario = total / 30;
