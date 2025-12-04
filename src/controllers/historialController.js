@@ -5,11 +5,9 @@ export const obtenerHistorialConGoteo = async (req, res) => {
   try {
     const usuarioId = req.user.id;
     const pagos = await Pago.findAll({ where: { user_id: usuarioId } });
-    console.log("📦 Pagos encontrados:", pagos.map(p => p.toJSON())); // 👈 aquí
     const hoy = new Date();
 
     const historial = await Promise.all(pagos.map(async (pago) => {
-      console.log("➡️ Pago procesado:", pago.toJSON()); // 👈 aquí
       const planNombre = pago.plan_id ? `Llave ${pago.plan_id}` : (pago.plan_nombre || "Sin plan");
       const monto = pago.monto;
       const fechaInicio = pago.fecha_pago || pago.fecha_inicio; // soporta ambos campos
@@ -30,7 +28,9 @@ export const obtenerHistorialConGoteo = async (req, res) => {
       }
 
       // ✅ Cálculo de goteo (igual para planes normales y personalizados)
-      const dias = Math.min(30, Math.max(0, Math.floor((hoy - new Date(fechaInicio)) / (1000 * 60 * 60 * 24))));
+      const inicio = new Date(fechaInicio);
+      const diferencia = hoy.getTime() - inicio.getTime();
+      const dias = Math.max(0, Math.min(30, Math.floor(diferencia / (1000 * 60 * 60 * 24))));
       const ganancia = monto * 0.40;
       const total = monto + ganancia;
       const goteoDiario = total / 30;
@@ -40,10 +40,13 @@ export const obtenerHistorialConGoteo = async (req, res) => {
        // ✅ Guardar acumulado y estado en la BD cuando se completa
       if (estado === "completado" && pago.estado !== "completado") {
         pago.estado = "completado";
-        pago.ganancia_acumulada = parseFloat(acumulado.toFixed(2));
-        console.log("💾 Guardando pago:", pago.toJSON()); // 👈 aquí
+        if (!pago.ganancia_acumulada || pago.ganancia_acumulada === 0) {
+          pago.ganancia_acumulada = parseFloat(acumulado.toFixed(2));
+        }
+        console.log("💾 Guardando pago:", pago.toJSON());
         await pago.save();
       }
+
         
        // ✅ Acciones según tipo de plan
       let acciones = [];
@@ -66,7 +69,8 @@ export const obtenerHistorialConGoteo = async (req, res) => {
         dias_transcurridos: dias,
         ganancia_acumulada: acumulado.toFixed(2),
         estado,
-        acciones: estado === "completado" ? ["Retirar", "Invertir", "Reinvertir"] : []
+        acciones
+        // acciones: estado === "completado" ? ["Retirar", "Invertir", "Reinvertir"] : []
       };
     }));
 
