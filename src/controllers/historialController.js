@@ -35,17 +35,24 @@ export const obtenerHistorialConGoteo = async (req, res) => {
       const total = monto + ganancia;
       const goteoDiario = total / 30;
       const acumulado = goteoDiario * dias;
-      const estado = dias >= 30 ? "completado" : "activo";
+      // ✅ Respetar estados ya procesados
+      let estado = pago.estado; 
+
+      // Solo recalcular si sigue en "activo" o "incompleto"
+      if (estado === "activo" || estado === "incompleto") {
+        estado = dias >= 30 ? "completado" : "activo";
+      }
+
 
        // ✅ Guardar acumulado y estado en la BD cuando se completa
-      if (estado === "completado" && pago.estado !== "completado") {
+      if (estado === "completado" && pago.estado === "activo") {
         pago.estado = "completado";
         if (!pago.ganancia_acumulada || pago.ganancia_acumulada === 0) {
           pago.ganancia_acumulada = parseFloat(acumulado.toFixed(2));
         }
-        console.log("💾 Guardando pago:", pago.toJSON());
         await pago.save();
       }
+
 
         
        // ✅ Acciones según tipo de plan
