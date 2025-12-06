@@ -51,13 +51,18 @@ export const obtenerHistorialConGoteo = async (req, res) => {
        // ✅ Acciones según tipo de plan
       let acciones = [];
       if (estado === "completado") {
-        acciones = ["Retirar"];
+        acciones = ["Retirar", "Invertir", "Reinvertir"];
         if (pago.plan_nombre === "invertir" || pago.plan_nombre === "reinvertir") {
           acciones.push("Reinvertir"); // ya es inversión personalizada
         } else {
           acciones.push("Invertir", "Reinvertir"); // planes normales
         }
       }
+
+      // 🚫 Si el pago ya fue procesado (invertido, reinvertido o retirado) → no mostrar botones
+        if (pago.estado === "invertido" || pago.estado === "reinvertido" || pago.estado === "retirado") {
+          acciones = [];
+        }
      
       return {
         pago_id: pago.id,
@@ -70,7 +75,7 @@ export const obtenerHistorialConGoteo = async (req, res) => {
         ganancia_acumulada: acumulado.toFixed(2),
         estado,
         acciones
-        // acciones: estado === "completado" ? ["Retirar", "Invertir", "Reinvertir"] : []
+        
       };
     }));
 
@@ -118,6 +123,10 @@ export const invertirPago = async (req, res) => {
     // Reiniciar fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
+
+    // ✅ Marcar el pago original como invertido
+    pagoOriginal.estado = "invertido";
+    await pagoOriginal.save();
 
     const nuevoPago = await Pago.create({
       user_id: req.user.id,
@@ -167,6 +176,10 @@ export const reinvertirPago = async (req, res) => {
     // Reiniciar fechas
     const ahora = new Date();
     const fechaFin = new Date(ahora.getTime() + DIAS * 24 * 60 * 60 * 1000);
+
+    // ✅ Marcar el pago original como reinvertido
+    pagoOriginal.estado = "reinvertido";
+    await pagoOriginal.save();
 
     const nuevoPago = await Pago.create({
       user_id: req.user.id,
